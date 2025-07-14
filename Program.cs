@@ -63,7 +63,6 @@ internal class GoSoftDrive
             (8, 7, "Produkt B"),
             (8, 8, "Produkt B"),
             (8, 10, "Produkt B"),
-
         };
 
         var zacetek = new Node(0, 0);
@@ -263,7 +262,7 @@ internal class GoSoftDrive
             return new List<Node>();
         }
 
-        // Nova funkcija z backtrack logiko
+        // Popravljena funkcija z backtrack logiko
         public List<Node> OptimiseSequenceWithBacktrack(Node start, List<Node> goals)
         {
             var current = start;
@@ -272,41 +271,40 @@ internal class GoSoftDrive
 
             while (preostali.Any())
             {
-                // Najdi najblizji cilj
                 var best = preostali.OrderBy(g =>
                 {
                     var pot = FindPath(current, g);
                     return pot != null && pot.Count > 0 ? pot.Count : int.MaxValue;
                 }).First();
 
-                // Najdi pot do tega cilja
                 var potDo = FindPath(current, best);
                 if (potDo != null && potDo.Count > 1)
                 {
-                    rezultat.AddRange(potDo.Skip(1)); // Dodaj pot 
-                }
+                    // Dodaj celotno pot do produkta (vključno s produktom)
+                    rezultat.AddRange(potDo.Skip(1));
 
-                // Premakni se na pozicijo produkta
-                current = best;
-                preostali.Remove(best);
-
-                // BACKTRACK: Premakni se en korak nazaj za naslednji izračun
-                if (preostali.Any()) // Samo ce se obstajajo cilji
-                {
-                    var backtrackPosition = GetBacktrackPosition(current);
-                    if (backtrackPosition != null)
+                    //pobiranju produkta se vrni na zadnjo pozicijo v poti (pred produktom)
+                    if (potDo.Count > 1)
                     {
-                        // Dodaj korak nazaj v pot
+                        var backtrackPosition = potDo[potDo.Count - 2]; //pozicija pred produktom
                         rezultat.Add(backtrackPosition);
                         current = backtrackPosition;
                     }
+                    else
+                    {
+                        current = best;
+                    }
                 }
+                else
+                {
+                    current = best;
+                }
+
+                preostali.Remove(best);
             }
 
             return rezultat;
         }
-
-        // Nova funkcija z podrobnim prikazom korakov
         public List<Node> OptimiseSequenceWithSteps(Node start, List<Node> goals, Dictionary<(int, int), string> imenaCiljev)
         {
             var current = start;
@@ -324,7 +322,7 @@ internal class GoSoftDrive
                 Console.WriteLine($"Trenutna pozicija: ({current.X}, {current.Y})");
                 Console.WriteLine($"Preostali cilji: {preostali.Count}");
 
-                // Izracunaj razdalje do vseh preostalih ciljev
+                //izracunaj razdalje do vseh preostalih ciljev
                 var razdalje = new List<(Node cilj, int razdalja, List<Node> pot)>();
                 foreach (var cilj in preostali)
                 {
@@ -333,7 +331,7 @@ internal class GoSoftDrive
                     razdalje.Add((cilj, razdalja, pot));
                 }
 
-                // Prikazi razdalje
+                //prikazi razdalje
                 Console.WriteLine("Razdalje do preostalih ciljev:");
                 foreach (var (cilj, razdalja, pot) in razdalje.OrderBy(x => x.razdalja))
                 {
@@ -344,11 +342,11 @@ internal class GoSoftDrive
                         Console.WriteLine($"  - {naziv} ({cilj.X}, {cilj.Y}): {razdalja} korakov");
                 }
 
-                // Izberi najblizji cilj
+                //najblizji cilj
                 var best = razdalje.OrderBy(x => x.razdalja).First();
                 Console.WriteLine($"Izbran cilj: {imenaCiljev[(best.cilj.X, best.cilj.Y)]} ({best.cilj.X}, {best.cilj.Y}) - {best.razdalja} korakov");
 
-                // Prikazi pot do cilja
+                // Prikaži pot do cilja
                 if (best.pot != null && best.pot.Count > 1)
                 {
                     Console.WriteLine("Pot do cilja:");
@@ -358,34 +356,37 @@ internal class GoSoftDrive
                         if (i == 0)
                             Console.WriteLine($"  {i + 1}. ({node.X}, {node.Y}) - START");
                         else if (i == best.pot.Count - 1)
-                            Console.WriteLine($"  {i + 1}. ({node.X}, {node.Y}) - CILJ");
+                            Console.WriteLine($"  {i + 1}. ({node.X}, {node.Y}) - CILJ (produkt)");
                         else
                             Console.WriteLine($"  {i + 1}. ({node.X}, {node.Y})");
                     }
 
-                    // Dodaj pot v rezultat
+                    //celotno pot v rezultat
                     rezultat.AddRange(best.pot.Skip(1));
-                }
 
-                // Premakni se na pozicijo produkta
-                current = best.cilj;
-                preostali.Remove(best.cilj);
+                    Console.WriteLine($"POBIRANJE: Delavec pobere produkt na ({best.cilj.X}, {best.cilj.Y})");
 
-                // BACKTRACK Premakni se en korak nazaj za naslednji izračun
-                if (preostali.Any()) // Samo ce se obstajajo cilji
-                {
-                    var backtrackPosition = GetBacktrackPosition(current);
-                    if (backtrackPosition != null && !backtrackPosition.Equals(current))
+                    //pobiranju se vrni na zadnjo pozicijo v poti
+                    if (best.pot.Count > 1)
                     {
-                        Console.WriteLine($"BACKTRACK: Premik na ({backtrackPosition.X}, {backtrackPosition.Y})");
+                        var backtrackPosition = best.pot[best.pot.Count - 2]; //pozicija pred produktom
+                        Console.WriteLine($"VRNITEV: Delavec se vrne na zadnjo pozicijo v poti ({backtrackPosition.X}, {backtrackPosition.Y})");
                         rezultat.Add(backtrackPosition);
                         current = backtrackPosition;
                     }
                     else
                     {
-                        Console.WriteLine("BACKTRACK: Ni mogoč, ostajam na trenutni poziciji");
+                        Console.WriteLine("OPOZORILO: Pot je prekratka za vrnitev - delavec ostaja na produktu");
+                        current = best.cilj;
                     }
                 }
+                else
+                {
+                    Console.WriteLine("OPOZORILO: Ni poti do cilja");
+                    current = best.cilj;
+                }
+
+                preostali.Remove(best.cilj);
 
                 Console.WriteLine($"Nova pozicija: ({current.X}, {current.Y})");
                 Console.WriteLine($"Skupaj korakov do sedaj: {rezultat.Count}");
@@ -402,34 +403,12 @@ internal class GoSoftDrive
             return rezultat;
         }
 
-        // Funkcija za določitev pozicije za backtrack
-        private Node GetBacktrackPosition(Node productPosition)
-        {
-            // Poskusi vse možne smeri za korak nazaj
-            var directions = new[] { (1, 0), (-1, 0), (0, 1), (0, -1) };
-
-            foreach (var (dx, dy) in directions)
-            {
-                int nx = productPosition.X + dx;
-                int ny = productPosition.Y + dy;
-
-                // Preveri, če je pozicija veljavna in prazna
-                if (nx >= 0 && ny >= 0 && nx < maxX && ny < maxY && grid[nx, ny] == 0)
-                {
-                    return new Node(nx, ny);
-                }
-            }
-
-            // Če ni mogoče narediti koraka nazaj, vrni trenutno pozicijo
-            return productPosition;
-        }
-
-        // Originalna funkcija ostane za primerjavo
         public List<Node> OptimiseSequence(Node start, List<Node> goals)
         {
             var current = start;
             var rezultat = new List<Node>();
             var preostali = new List<Node>(goals);
+
             while (preostali.Any())
             {
                 var best = preostali.OrderBy(g =>
@@ -437,12 +416,33 @@ internal class GoSoftDrive
                     var pot = FindPath(current, g);
                     return pot != null && pot.Count > 0 ? pot.Count : int.MaxValue;
                 }).First();
+
                 var potDo = FindPath(current, best);
                 if (potDo != null && potDo.Count > 1)
+                {
+                    //celotna pot do  z produkta
                     rezultat.AddRange(potDo.Skip(1));
-                current = best;
+
+                    //pobiranju produkta se vrni na zadnjo pozicijo v poti
+                    if (potDo.Count > 1)
+                    {
+                        var backtrackPosition = potDo[potDo.Count - 2]; //pozicija pred produktom
+                        rezultat.Add(backtrackPosition);
+                        current = backtrackPosition;
+                    }
+                    else
+                    {
+                        current = best; //pot dolga 1 ostani
+                    }
+                }
+                else
+                {
+                    current = best; //ostani na produktu
+                }
+
                 preostali.Remove(best);
             }
+
             return rezultat;
         }
 
