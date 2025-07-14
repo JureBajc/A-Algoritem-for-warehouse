@@ -1,45 +1,39 @@
-# 🛒 GoDrive - Sistem za Optimizacijo Poti v Skladišču
+# GoDrive – Sistem za optimizacijo poti v skladišču
 
-**GoDrive** je simulacijska C# aplikacija, ki uporablja **A* algoritme** za optimizacijo poti delavca po skladišču pri pobiranju izdelkov. Sistem omogoča izbiro različnih strategij iskanja poti, vključno z **basic optimizacijo**, **backtracking logiko** in **podrobnim prikazom korakov algoritma**.
+GoDrive je simulacijska C# konzolna aplikacija, ki uporablja **A\*** algoritme za optimizacijo poti skozi skladišče z več ciljnimi točkami (izdelki). Cilj je minimizirati skupno razdaljo, ki jo mora delavec prehoditi, hkrati pa omogočiti fleksibilne pristope za iskanje poti, vključno z možnostjo vračanja (backtracking).
 
-## ✨ Funkcionalnosti
+---
 
-- Vizualizacija skladišča na osnovi ASCII mape
-- Iskanje poti do izdelkov z A* algoritmom
-- Možnost izbire strategije iskanja poti:
-  - Brez vračanja (originalna logika)
-  - Z vračanjem na prejšnjo pozicijo (backtrack)
-  - Podrobni prikaz korakov algoritma z razdaljami
-- Statistika poti:
-  - Skupno število korakov
-  - Povprečna dolžina poti do izdelka
-  - Ocenjen čas hoje
+## 🛠️ Tehnične značilnosti
 
-## 🧠 Algoritmi
+- **Jezik**: C# (.NET 6 ali novejši)  
+- **Algoritem**: A\* za iskanje poti po dvodimenzionalni mreži  
+- **Način simulacije**: ASCII mreža, kjer je vsaka celica definirana z znaki:
+  - `.` (prazno)
+  - `#` (izdelek)
+  - `*` (pot)
+  - `S` (začetek)
+- **Uporabniški vmesnik**: Besedilni meni z izborom algoritma  
+- **Podatkovne strukture**:
+  - `Node` – točka na mreži z atributi za A\* iskanje
+  - `AStar2D` – logika iskanja poti in optimizacije
+- **Strategije iskanja poti**:
+  1. **Brez vračanja** – osnovna optimizacija (gre le naprej)
+  2. **Z vračanjem (backtrack)** – po pobiranju izdelka se delavec vrne na predhodno lokacijo
+  3. **Korak po koraku** – interaktivna diagnostika poti in izračunov
 
-Uporabljen je **A\*** (A-Star) algoritmi za iskanje najkrajše poti na mreži, kjer:
+---
 
-- `.` predstavlja prazno polje (prehodno)
-- `#` predstavlja izdelek (cilj poti)
-- Pot se izračuna od začetne točke `(0, 0)` do vseh izdelkov v čim bolj optimalnem vrstnem redu
+## ⚙️ Zahteve
 
-Strategije optimizacije:
+- .NET SDK 6.0 ali novejši  
+- Ukazna vrstica ali terminal (Windows CMD, PowerShell, bash)
 
-1. **Originalna logika**: Delavec se ne vrača, samo gre od enega izdelka do naslednjega.
-2. **Z backtrack logiko**: Delavec se po vsakem pobiranju vrne na predhodno pozicijo.
-3. **Podrobni koraki**: Vsak korak algoritma je prikazan z razdaljami in opisom poti.
+---
 
-## 🖥️ Uporaba
-
-### Zahteve
-
-- [.NET SDK](https://dotnet.microsoft.com/en-us/download) (npr. .NET 6 ali novejši)
-- Podprt sistem Windows/Linux/macOS
-
-### Zagon programa
-
-1. Kloniraj repozitorij:
+## 🔧 Namestitev in zagon
 
 ```bash
-git clone https://github.com/JureBajc/A-Algoritem-for-warehouse.git
+git clone https://github.com/<tvoje-uporabniško-ime>/GoDrive.git
 cd GoDrive
+dotnet run
