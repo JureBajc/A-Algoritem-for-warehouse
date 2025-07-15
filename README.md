@@ -39,7 +39,7 @@ GoSoftDrive is a C# console application that demonstrates advanced pathfinding a
 
 ## Example Output
 
-```text
+```
 === GoDrive Sistem Poti ===
 
 Choose algorithm:
@@ -60,3 +60,38 @@ Start: (0, 0)
 00:  S  .  . ...
 01:  .  X  . ...
 ...
+text
+```
+
+##Running the Code
+Requires .NET SDK
+
+Compile and run using:
+```
+sh
+dotnet run
+```
+Follow prompts in the console.
+
+##Map Legend
+S = Start position
+
+1,2,3,... = Product pickup order
+
+* = Path
+
+. = Free space
+
+# = Product location
+
+X = Obstacle
+
+##Customization
+Products:
+Add or modify products in the izdelki list.
+
+Warehouse Map:
+Change the ASCII-art mapa array to simulate different warehouse layouts.
+
+Pathfinding Modes:
+Modify or extend algorithms in AStar2D as needed.
