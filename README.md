@@ -1,39 +1,62 @@
-# GoDrive – Sistem za optimizacijo poti v skladišču
+# GoSoftDrive – Warehouse Pathfinding Simulator
 
-GoDrive je simulacijska C# konzolna aplikacija, ki uporablja **A\*** algoritme za optimizacijo poti skozi skladišče z več ciljnimi točkami (izdelki). Cilj je minimizirati skupno razdaljo, ki jo mora delavec prehoditi, hkrati pa omogočiti fleksibilne pristope za iskanje poti, vključno z možnostjo vračanja (backtracking).
+GoSoftDrive is a C# console application that demonstrates advanced pathfinding and route optimization in a simulated warehouse environment using ASCII maps. The project implements an A* (A-star) search algorithm to find the shortest path between storage locations, supporting multiple product pickups and various visualization modes.
 
----
+## Features
 
-## 🛠️ Tehnične značilnosti
+- **ASCII Warehouse Map:** Visualizes the warehouse grid with obstacles, products, and paths.
+- **Configurable Product Locations:** Products are defined with coordinates and names.
+- **A\* Pathfinding:** Efficient search algorithm for finding optimal routes.
+- **Multiple Modes:**
+  - Step-by-step backtracking collection (`OptSekvencaBacktrack`)
+  - Verbose, detailed path explanation (`OptSekvencaKoraki`)
+  - Single-product pathfinding
+- **Route Summary:** Displays product pickup order, path length, estimated time, and more.
+- **Custom Visualization:** Colored output in the console with legend and step indices.
+- **Localized Variable Names:** Example uses Slovenian for variables, but all core logic is in C#.
 
-- **Jezik**: C# (.NET 6 ali novejši)  
-- **Algoritem**: A\* za iskanje poti po dvodimenzionalni mreži  
-- **Način simulacije**: ASCII mreža, kjer je vsaka celica definirana z znaki:
-  - `.` (prazno)
-  - `#` (izdelek)
-  - `*` (pot)
-  - `S` (začetek)
-- **Uporabniški vmesnik**: Besedilni meni z izborom algoritma  
-- **Podatkovne strukture**:
-  - `Node` – točka na mreži z atributi za A\* iskanje
-  - `AStar2D` – logika iskanja poti in optimizacije
-- **Strategije iskanja poti**:
-  1. **Brez vračanja** – osnovna optimizacija (gre le naprej)
-  2. **Z vračanjem (backtrack)** – po pobiranju izdelka se delavec vrne na predhodno lokacijo
-  3. **Korak po koraku** – interaktivna diagnostika poti in izračunov
+## How It Works
 
----
+1. **Map Initialization:**  
+   The warehouse is represented as a 2D grid (`grid`), initialized from an ASCII-art string array. Cells can be free, obstacles, or products, each with a movement cost.
+2. **Product List:**  
+   Products are defined by `(x, y, name)` tuples and stored in a list.
+3. **Pathfinding Algorithms:**  
+   - **AStar2D.FindPath:** Finds the shortest path from start to goal using the A* algorithm.
+   - **OptSekvencaBacktrack:** Greedily visits the nearest uncollected product, simulating a backtracking route.
+   - **OptSekvencaKoraki:** Verbose mode; prints detailed decision-making at each step.
+4. **User Interaction:**  
+   The user selects which algorithm/mode to run.
+5. **Visualization:**  
+   The program prints the final warehouse map, showing the path, product pickup order, and summary statistics.
 
-## ⚙️ Zahteve
+## Key Classes
 
-- .NET SDK 6.0 ali novejši  
-- Ukazna vrstica ali terminal (Windows CMD, PowerShell, bash)
+- **`Node`:**  
+  Represents a position in the grid with pathfinding costs and links to the parent node.
+- **`AStar2D`:**  
+  Implements the pathfinding logic and multi-product route optimization.
 
----
+## Example Output
 
-## 🔧 Namestitev in zagon
+```text
+=== GoDrive Sistem Poti ===
 
-```bash
-git clone https://github.com/<tvoje-uporabniško-ime>/GoDrive.git
-cd GoDrive
-dotnet run
+Choose algorithm:
+1 - Show step trace
+2 - Show all steps
+Enter choice: 1
+
+Start: (0, 0)
+
+1. Laptop (9, 19)
+   +28 steps
+2. Bluetooth Speaker (10, 4)
+   +33 steps
+...
+
+=== Skladišče ===
+     0  1  2  ...
+00:  S  .  . ...
+01:  .  X  . ...
+...
